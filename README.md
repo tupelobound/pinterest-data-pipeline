@@ -10,7 +10,7 @@ Pinterest has world-class machine learning engineering systems. They have billio
 
 ## The data
 
-In order to emulate the kind of data that Pinterest's engineers are likely to work with, AiCore provide a script, [user_posting_emulation.py](user_posting_emulation.py) that when run from the terminal mimics the stream of random data points received by the Pinterest API when a POST request is made by a user uploading data to Pinterest.
+In order to emulate the kind of data that Pinterest's engineers are likely to work with, AiCore provide a script, [user_posting_emulation.py](user_posting_emulation.py) that when run from the terminal mimics the stream of random data points received by the Pinterest API when POST requests are made by users uploading data to Pinterest.
 
 Running the script instantiates a database connector class, which is used to connect to an AWS RDS database containing the following tables:
 
