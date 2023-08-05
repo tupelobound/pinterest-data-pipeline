@@ -37,3 +37,8 @@ user_data:
 {'ind': 7528, 'first_name': 'Abigail', 'last_name': 'Ali', 'age': 20, 'date_joined': datetime.datetime(2015, 10, 24, 11, 23, 51)}
 ```
 
+## Tools used
+
+This project is built using AWS architecture. The following tools were used:
+
+- Apache Kafka
