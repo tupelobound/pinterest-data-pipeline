@@ -75,7 +75,7 @@ Once your cluster is up and running, you'll need a client to communicate with it
 
 1. Navigate to the EC2 dashboard and click on 'Launch Instance':
 
-<img src="images/ec2-launch-instance.png" text-align="center" alt="launch ec2 instance" width="500"/>
+<img src="images/ec2-launch-instance.png" alt="launch ec2 instance" width="500"/>
 
 2. Give your instance a name, e.g. 'pinterest-kafka-client'.
 3. Keep the default Application and OS images, and instance type. Again, this choice may be determined by usage and cost considerations.
