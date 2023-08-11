@@ -61,11 +61,11 @@ The first stop in the pipeline for our data will be an Apache Kafka cluster in t
 2. From the MSK menu, you can click on 'Create cluster' to start the process.
 3. Here, you can choose from 'quick' or 'custom' create options and can name your cluster:
 
-<img src="images/apache-msk-1.png" alt="create Apache cluster" width="800"/>
+<img src="images/apache-msk-1.png" alt="create Apache cluster" width="500"/>
 
 4. Scroll down and choose 'Provisioned' and specify the Kafka version and broker type. The type you choose will depend on requirements and cost considerations.
 
-<img src="images/apache-msk-2.png" alt="kafka provisioned and broker type" width="800"/>
+<img src="images/apache-msk-2.png" alt="kafka provisioned and broker type" width="500"/>
 
 5. Finally, scroll down and click 'Create cluster'. The cluster can take between 15 and 20 minutes to create.
 
@@ -75,18 +75,22 @@ Once your cluster is up and running, you'll need a client to communicate with it
 
 1. Navigate to the EC2 dashboard and click on 'Launch Instance':
 
-<img src="images/ec2-launch-instance.png" alt="launch ec2 instance" width="800"/>
+<img src="images/ec2-launch-instance.png" alt="launch ec2 instance" width="500"/>
 
 2. Give your instance a name, e.g. 'pinterest-kafka-client'.
 3. Keep the default Application and OS images, and instance type. Again, this choice may be determined by usage and cost considerations.
 
-<img src="images/ec2-OS-images.png" alt="ec2 OS image options" width="800"/>
+<img src="images/ec2-OS-images.png" alt="ec2 OS image options" width="500"/>
 
 4. Create a new keypair for connecting securely to the instance via SSH. Give the keypair a descriptive name and choose 'RSA' and '.pem' for the type and file format, respectively. The .pem file will automatically download - keep this file safe for later use.
 
-<img src="images/ec2-key-pair.png" alt="ec2 key pair options" width="800"/>
+<img src="images/ec2-key-pair.png" alt="ec2 key pair options" width="500"/>
 
 5. Keep the default settings for the other sections. Click on 'Launch Instance' in the right-hand summary menu.
+
+### Installing Kafka on the client machine
+
+1. 
 
 
 
