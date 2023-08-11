@@ -79,7 +79,13 @@ Once your cluster is up and running, you'll need a client to communicate with it
 
 2. Give your instance a name, e.g. 'pinterest-kafka-client'.
 3. Keep the default Application and OS images, and instance type. Again, this choice may be determined by usage and cost considerations.
+
+<img src="images/ec2-OS-images.png" alt="ec2 OS image options" width="800"/>
+
 4. Create a new keypair for connecting securely to the instance via SSH. Give the keypair a descriptive name and choose 'RSA' and '.pem' for the type and file format, respectively. The .pem file will automatically download - keep this file safe for later use.
+
+<img src="images/ec2-key-pair.png" alt="ec2 key pair options" width="800"/>
+
 5. Keep the default settings for the other sections. Click on 'Launch Instance' in the right-hand summary menu.
 
 
