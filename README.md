@@ -55,3 +55,31 @@ This project is built using AWS architecture. The following tools were used:
 
 ### Create an Apache cluster using AWS MSK
 
+The first stop in the pipeline for our data will be an Apache Kafka cluster in the AWS cloud ecosystem, using [Amazon Managed Streaming for Apache Kafka (MSK)](https://aws.amazon.com/msk/). The documentation includes a good guide for [getting started](https://docs.aws.amazon.com/msk/latest/developerguide/getting-started.html) and I will outline the steps taken to get a cluster up and running here.
+
+1. Firstly, log into the AWS console and navigate to MSK via the 'Services' menu.
+2. From the MSK menu, you can click on 'Create cluster' to start the process.
+3. Here, you can choose from 'quick' or 'custom' create options and can name your cluster:
+
+<img src="images/apache-msk-1.png" alt="create Apache cluster" width="800"/>
+
+4. Scroll down and choose 'Provisioned' and specify the Kafka version and broker type. The type you choose will depend on requirements and cost considerations.
+
+<img src="images/apache-msk-2.png" alt="kafka provisioned and broker type" width="800"/>
+
+5. Finally, scroll down and click 'Create cluster'. The cluster can take between 15 and 20 minutes to create.
+
+Once your cluster is up and running, you'll need a client to communicate with it. As we're working on AWS, let's launch an EC2 instance to act as our client.
+
+1. Navigate to the EC2 dashboard and click on 'Launch Instance':
+
+<img src="images/ec2-launch-instance.png" alt="launch ec2 instance" width="800"/>
+
+2. Give your instance a name, e.g. 'pinterest-kafka-client'.
+3. Keep the default Application and OS images, and instance type. Again, this choice may be determined by usage and cost considerations.
+4. Create a new keypair for connecting securely to the instance via SSH. Give the keypair a descriptive name and choose 'RSA' and '.pem' for the type and file format, respectively. The .pem file will automatically download - keep this file safe for later use.
+5. Keep the default settings for the other sections. Click on 'Launch Instance' in the right-hand summary menu.
+
+
+
+
