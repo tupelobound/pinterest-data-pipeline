@@ -8,9 +8,16 @@ Build the system that Pinterest uses to analyse both historical, and real-time d
 
 Pinterest has world-class machine learning engineering systems. They have billions of user interactions such as image uploads or image clicks which they need to process every day to inform the decisions to make. In this project, I am building a system in the cloud that takes in those events and runs them through two separate pipelines. One for computing real-time metrics (such as profile popularity, which would be used to recommend that profile in real-time), and another for computing metrics that depend on historical data (such as the most popular category this year).
 
+## Project Dependencies
+
+In order to run this project, the following modules need to be installed:
+
+- `python-dotenv`
+- `sqlalchemy`
+
 ## The data
 
-In order to emulate the kind of data that Pinterest's engineers are likely to work with, AiCore provide a script, [user_posting_emulation.py](user_posting_emulation.py) that when run from the terminal mimics the stream of random data points received by the Pinterest API when POST requests are made by users uploading data to Pinterest.
+In order to emulate the kind of data that Pinterest's engineers are likely to work with, this project contains a script, [user_posting_emulation_to_console.py](user_posting_emulation_to_console.py) that when run from the terminal mimics the stream of random data points received by the Pinterest API when POST requests are made by users uploading data to Pinterest.
 
 Running the script instantiates a database connector class, which is used to connect to an AWS RDS database containing the following tables:
 
@@ -42,3 +49,8 @@ user_data:
 This project is built using AWS architecture. The following tools were used:
 
 - Apache Kafka
+
+## Building the pipeline
+
+### Create an Apache cluster using AWS MSK
+
