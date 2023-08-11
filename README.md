@@ -69,6 +69,8 @@ The first stop in the pipeline for our data will be an Apache Kafka cluster in t
 
 5. Finally, scroll down and click 'Create cluster'. The cluster can take between 15 and 20 minutes to create.
 
+### Create a client machine for the cluster
+
 Once your cluster is up and running, you'll need a client to communicate with it. As we're working on AWS, let's launch an EC2 instance to act as our client.
 
 1. Navigate to the EC2 dashboard and click on 'Launch Instance':
