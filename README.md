@@ -67,7 +67,7 @@ The first stop in the pipeline for our data will be an Apache Kafka cluster in t
 
 <img src="images/apache-msk-2.png" alt="kafka provisioned and broker type" width="500"/>
 
-5. Finally, scroll down and click 'Create cluster'. The cluster can take between 15 and 20 minutes to create.
+5. Finally, scroll down and click 'Create cluster'. The cluster can take between 15 and 20 minutes to create. When the cluster has been created, navigate to the 'Properties' tab, locate the network settings and take a note of the security group associated with the cluster. Next, click on 'View client information' and take a note of the bootstrap servers.
 
 ### Create a client machine for the cluster
 
@@ -88,9 +88,96 @@ Once your cluster is up and running, you'll need a client to communicate with it
 
 5. Keep the default settings for the other sections. Click on 'Launch Instance' in the right-hand summary menu.
 
-### Installing Kafka on the client machine
+### Enable client machine to connect to the cluster
 
-1. 
+In order for the client machine to connect to the cluster, we need to edit the inbound rules for the security group associated with the cluster.
+
+1. In the left-hand EC2 menu, click on 'Security Groups'.
+2. Select the security group associated with the Kafka cluster (noted earlier).
+3. Select the 'Inbound rules' tab and then click on 'Edit inbound rules'.
+4. Click on 'Add rule'. Choose 'All traffic' for the type, and then select the security group associated with the EC2 instance.
+5. Save the rules.
+
+### Install Kafka on the client machine
+
+1. Once the new instance is in the running state, you can connect via SSH to interact with the instance via the command line. To do this, click on the instance ID to open the summary page, then click on 'Connect':
+
+<img src="images/connect-to-ec2.png" alt="ec2 connect" width="500"/>
+
+2. Follow the instructions in the 'SSH' tab to connect to the instance.
+
+```bash
+# make sure key is not publicly viewable
+chmod 400 pinterest-kafka-client-keypair.pem
+# connect
+ssh -i "pinterest-kafka-client-keypair.pem" ec2-user@<instance-public-DNS>
+```
+
+3. Now on the instance command line:
+
+```bash
+# install Java - required for Kafka to run
+sudo yum install java-1.8.0
+# download Kafka - must be same version as MSK cluster created earlier
+wget https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz
+# unpack .tgz
+tar -xzf kafka_2.12-2.8.1.tgz
+```
+
+4. Install the [MSK IAM package](https://github.com/aws/aws-msk-iam-auth) that will enable the MSK cluster to authenticate the client:
+
+```bash
+# navigate to the correct directory
+cd kafka_2.12-2.8.1/libs/
+# download the package
+wget https://github.com/aws/aws-msk-iam-auth/releases/download/v1.1.5/aws-msk-iam-auth-1.1.5-all.jar
+```
+
+5. Configure the client to be able to use the IAM package:
+
+```bash
+# open bash config file
+nano ~/.bashrc
+```
+
+Add the following line to the config file, then save and exit:
+
+```bash
+export CLASSPATH=/home/ec2-user/kafka_2.12-2.8.1/libs/aws-msk-iam-auth-1.1.5-all.jar
+```
+
+Continue with configuration:
+
+```bash
+# activate changes to .bashrc
+source ~/.bashrc
+# navigate to Kafka bin folder
+cd ../bin
+# create client.properties file
+nano client.properties
+```
+
+Add the following code to the client.properties file, then save and exit:
+
+```bash
+# Sets up TLS for encryption and SASL for authN.
+security.protocol = SASL_SSL
+
+# Identifies the SASL mechanism to use.
+sasl.mechanism = AWS_MSK_IAM
+
+# Binds SASL client implementation.
+sasl.jaas.config = software.amazon.msk.auth.iam.IAMLoginModule required;
+
+# Encapsulates constructing a SigV4 signature based on extracted credentials.
+# The SASL client bound by "sasl.jaas.config" invokes this class.
+sasl.client.callback.handler.class = software.amazon.msk.auth.iam.IAMClientCallbackHandler
+```
+
+
+
+
+
 
 
 
