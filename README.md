@@ -98,6 +98,60 @@ In order for the client machine to connect to the cluster, we need to edit the i
 4. Click on 'Add rule'. Choose 'All traffic' for the type, and then select the security group associated with the EC2 instance.
 5. Save the rules.
 
+We also need to create an IAM role for the client machine.
+
+1. Navigate to the AWS IAM dashboard, select 'Roles' from the left-hand menu and then click on 'Create role'.
+2. Select 'AWS service' and 'EC2', then click on 'Next'.
+3. On the next page, select 'Create policy'.
+4. In the policy editor, choose JSON format and paste in the following policy. **Note: this policy is somewhat open - a more restrictive policy would be more appropriate for a production environment**:
+
+```bash
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:Connect",
+                "kafka-cluster:AlterCluster",
+                "kafka-cluster:DescribeCluster"
+            ],
+            "Resource": [
+                "arn:aws:kafka:<region>:<AWS-ID>:cluster/<cluster-name>/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:*Topic*",
+                "kafka-cluster:WriteData",
+                "kafka-cluster:ReadData"
+            ],
+            "Resource": [
+                "arn:aws:kafka:<region>:<AWS-ID>:topic/<cluster-name>/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:AlterGroup",
+                "kafka-cluster:DescribeGroup"
+            ],
+            "Resource": [
+                "arn:aws:kafka:<region>:<AWS-ID>:group/<cluster-name>/*"
+            ]
+        }
+    ]
+}
+```
+
+5. On the next page, give the policy a descriptive name and save the policy.
+6. Back in the create role tab in the browser, click refresh to show the new policy and select the policy.
+7. Click 'Next', give the role a descriptive name and save the role.
+8. In the EC2 dashboard, click on the client instance.
+9. Under 'Actions' and 'Security', click on 'Modify IAM role'.
+10. Select the role just created and click on 'Update IAM role'.
+
 ### Install Kafka on the client machine
 
 1. Once the new instance is in the running state, you can connect via SSH to interact with the instance via the command line. To do this, click on the instance ID to open the summary page, then click on 'Connect':
@@ -174,9 +228,15 @@ sasl.jaas.config = software.amazon.msk.auth.iam.IAMLoginModule required;
 sasl.client.callback.handler.class = software.amazon.msk.auth.iam.IAMClientCallbackHandler
 ```
 
+### Create topics on the Kafka cluster
 
+It is now possible to create topics on the Kafka cluster using the client machine command line. The command for creating topics is as follows. Use the boostrap server string noted earlier after cluster creation.
 
+```bash
+<path-to-your-kafka-installation>/bin/kafka-topics.sh --create --bootstrap-server <BootstrapServerString> --command-config client.properties --topic <topic name>
+```
 
+For this project, I created three topics. One each for the `pinterest_data`, `geolocation_data`, and `user_data` outlined above.
 
 
 
