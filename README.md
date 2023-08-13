@@ -50,9 +50,19 @@ user_data:
 - [Apache Kafka](https://kafka.apache.org/) - Apache Kafka is an event streaming platform. From the Kafka [documentation](https://kafka.apache.org/documentation/):
 >Event streaming is the practice of capturing data in real-time from event sources like databases, sensors, mobile devices, cloud services, and software applications in the form of streams of events; storing these event streams durably for later retrieval; manipulating, processing, and reacting to the event streams in real-time as well as retrospectively; and routing the event streams to different destination technologies as needed. Event streaming thus ensures a continuous flow and interpretation of data so that the right information is at the right place, at the right time.
 
+- [AWS MSK](https://aws.amazon.com/msk/)
+
+- [AWS MSK Connect](https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html)
+
 - [Kafka REST Proxy](https://docs.confluent.io/platform/current/kafka-rest/index.html)
 
 - [AWS API Gateway](https://aws.amazon.com/api-gateway/)
+
+- [Apache Spark](https://spark.apache.org/docs/3.4.1/)
+
+- [PySpark](https://spark.apache.org/docs/3.4.1/api/python/index.html)
+
+- [Databricks](https://docs.databricks.com/en/index.html)
 
 ## Building the pipeline
 
@@ -494,3 +504,16 @@ s3.bucket.name=<BUCKET_NAME>
 7. Click 'Next' and then 'Create connector'.
 
 Once the connector creation process is complete, you should be able to see any messages sent to the cluster in the S3 bucket, inside a folder named 'Topics'.
+
+### Batch processing data using Apache Spark on Databricks
+
+In order to batch process the data on Databricks, it's necessary to mount the S3 bucket on Databricks. The file [mount_s3_and_get_data.ipynb](mount_s3_and_get_data.ipynb) is a notebook that was run on the Databricks platform. The steps carried out in the notebook are:
+
+1. Import necessary libraries
+2. List tables in Databricks filestore in order to obtain AWS credentials file name
+3. Read the credentials .csv into a Spark dataframe
+4. Generate credential variables from Spark dataframe
+5. Mount the S3 bucket containing the messages from the Kafka topics
+6. List the topics
+7. Read the .json message files into three Spark dataframes, one each for each of the topics
+8. Unmount the S3 bucket
