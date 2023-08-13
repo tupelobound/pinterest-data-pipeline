@@ -93,9 +93,9 @@ def run_infinite_post_data_loop():
             geo_result = get_record_from_table("geolocation_data", connection, random_row)
             user_result = get_record_from_table("user_data", connection, random_row)
             # post result to Kafka cluster via API
-            post_record_to_API("https://do64ku0ks1.execute-api.us-east-1.amazonaws.com/prod/topics/1215be80977f.pin", pin_result)
-            post_record_to_API("https://do64ku0ks1.execute-api.us-east-1.amazonaws.com/prod/topics/1215be80977f.geo", geo_result)
-            post_record_to_API("https://do64ku0ks1.execute-api.us-east-1.amazonaws.com/prod/topics/1215be80977f.user", user_result)
+            post_record_to_API("https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.pin", pin_result)
+            post_record_to_API("https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.geo", geo_result)
+            post_record_to_API("https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.user", user_result)
 
 
 if __name__ == "__main__":
