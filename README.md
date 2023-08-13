@@ -14,6 +14,7 @@ In order to run this project, the following modules need to be installed:
 
 - `python-dotenv`
 - `sqlalchemy`
+- `requests`
 
 ## The data
 
@@ -48,6 +49,10 @@ user_data:
 
 - [Apache Kafka](https://kafka.apache.org/) - Apache Kafka is an event streaming platform. From the Kafka [documentation](https://kafka.apache.org/documentation/):
 >Event streaming is the practice of capturing data in real-time from event sources like databases, sensors, mobile devices, cloud services, and software applications in the form of streams of events; storing these event streams durably for later retrieval; manipulating, processing, and reacting to the event streams in real-time as well as retrospectively; and routing the event streams to different destination technologies as needed. Event streaming thus ensures a continuous flow and interpretation of data so that the right information is at the right place, at the right time.
+
+- [Kafka REST Proxy](https://docs.confluent.io/platform/current/kafka-rest/index.html)
+
+- [AWS API Gateway](https://aws.amazon.com/api-gateway/)
 
 ## Building the pipeline
 
@@ -291,4 +296,40 @@ We can test if the API can receive requests by opening a web browser and going t
 ```bash
 ["data.pin","data.user","__amazon_msk_canary","data.geo"]
 ```
+
+To more easily connect to the API programmatically using different request methods I set up an API gateway on AWS.
+
+### AWS API Gateway
+
+Navigate to the AWS API Gateway service. We'll create a REST API.
+
+1. Click on 'Build' in the REST API box:
+
+<img src="images/rest-api-build.png" alt="ec2 connect" width="1000"/>
+
+2. Choose 'REST', 'New API', give the API a descriptive name, then click on 'Create API':
+
+<img src="images/rest-api-build-2.png" alt="ec2 connect" width="500"/>
+
+3. From the 'Actions' menu, choose 'Create resource'. Select 'Configure as proxy resource' and 'Enable API Gateway CORS' boxes, then click on 'Create resource':
+
+<img src="images/rest-api-create-resource.png" alt="ec2 connect" width="1000"/>
+
+4. On the next page, set up HTTP Proxy, using the address for earlier as the endpoint, "http://<your-client-public-dns>:8082/{proxy}":
+
+<img src="images/rest-api-create-method.png" alt="ec2 connect" width="1000"/>
+
+5. With the resource and method created, it's possible to test the API (make sure that the REST proxy on the client is running and listening for requests). If everything is working correctly, the following test should result in a 200 response code and the same response body obtained through the browser:
+
+<img src="images/rest-api-test-method.png" alt="ec2 connect" width="500"/>
+
+6. Now the API needs to be deployed. From the 'Actions' menu, select 'Deploy API'. Choose 'New stage' and give the stage a name, then click on 'Deploy':
+
+<img src="images/rest-api-test-method.png" alt="ec2 connect" width="500"/>
+
+This completes the process and an invoke URL is generated that can then be used for POST requests.
+
+### Sending messages to the cluster using the API gateway
+
+Running the script [user_posting_emulation_to_API](user_posting_emulation_to_API.py) will emulate a stream of messages and post those messages to the cluster via the API gateway and the Kafka REST proxy.
 
