@@ -106,42 +106,47 @@ We also need to create an IAM role for the client machine.
 1. Navigate to the AWS IAM dashboard, select 'Roles' from the left-hand menu and then click on 'Create role'.
 2. Select 'AWS service' and 'EC2', then click on 'Next'.
 3. On the next page, select 'Create policy'.
-4. In the policy editor, choose JSON format and paste in the following policy. **Note: this policy is somewhat open - a more restrictive policy would be more appropriate for a production environment**:
+4. In the policy editor, choose JSON format and paste in the following policy. **Note: this policy is somewhat open - a more restrictive policy would be more appropriate for a production environment**
 
 ```bash
 {
     "Version": "2012-10-17",
     "Statement": [
         {
+            "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
-                "kafka-cluster:Connect",
-                "kafka-cluster:AlterCluster",
-                "kafka-cluster:DescribeCluster"
+                "kafka:ListClustersV2",
+                "kafka:ListVpcConnections",
+                "kafka:DescribeClusterOperation",
+                "kafka:GetCompatibleKafkaVersions",
+                "kafka:ListClusters",
+                "kafka:ListKafkaVersions",
+                "kafka:GetBootstrapBrokers",
+                "kafka:ListConfigurations",
+                "kafka:DescribeClusterOperationV2"
             ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "kafka-cluster:*",
             "Resource": [
-                "arn:aws:kafka:<region>:<AWS-ID>:cluster/<cluster-name>/*"
+                "arn:aws:kafka:*:778885355873:transactional-id/*/*/*",
+                "arn:aws:kafka:*:778885355873:group/*/*/*",
+                "arn:aws:kafka:*:778885355873:topic/*/*/*",
+                "arn:aws:kafka:*:778885355873:cluster/*/*"
             ]
         },
         {
+            "Sid": "VisualEditor2",
             "Effect": "Allow",
-            "Action": [
-                "kafka-cluster:*Topic*",
-                "kafka-cluster:WriteData",
-                "kafka-cluster:ReadData"
-            ],
+            "Action": "kafka:*",
             "Resource": [
-                "arn:aws:kafka:<region>:<AWS-ID>:topic/<cluster-name>/*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "kafka-cluster:AlterGroup",
-                "kafka-cluster:DescribeGroup"
-            ],
-            "Resource": [
-                "arn:aws:kafka:<region>:<AWS-ID>:group/<cluster-name>/*"
+                "arn:aws:kafka:*:778885355873:cluster/*/*",
+                "arn:aws:kafka:*:778885355873:configuration/*/*",
+                "arn:aws:kafka:*:778885355873:vpc-connection/*/*/*"
             ]
         }
     ]
@@ -274,7 +279,7 @@ client.security.protocol = SASL_SSL
 client.sasl.mechanism = AWS_MSK_IAM
 
 # Binds SASL client implementation.
-client.sasl.jaas.config = software.amazon.msk.auth.iam.IAMLoginModule required awsRoleArn="Your Access Role";
+client.sasl.jaas.config = software.amazon.msk.auth.iam.IAMLoginModule required;
 
 # Encapsulates constructing a SigV4 signature based on extracted credentials.
 # The SASL client bound by "sasl.jaas.config" invokes this class.
@@ -291,13 +296,13 @@ To start the REST API, navigate to the `confluent-7.2.0/bin` folder and run the 
 ./kafka-rest-start /home/ec2-user/confluent-7.2.0/etc/kafka-rest/kafka-rest.properties
 ```
 
-We can test if the API can receive requests by opening a web browser and going to "http://<your-client-public-dns>:8082/topics". The response should be displayed in the browser window and look something like:
+We can test if the API can receive requests by opening a web browser and going to "http://your-client-public-dns:8082/topics". The response should be displayed in the browser window and look something like:
 
 ```bash
 ["data.pin","data.user","__amazon_msk_canary","data.geo"]
 ```
 
-To more easily connect to the API programmatically using different request methods I set up an API gateway on AWS.
+For this project, to more easily connect to the API programmatically using different request methods I set up an API gateway on AWS.
 
 ### AWS API Gateway
 
@@ -315,7 +320,7 @@ Navigate to the AWS API Gateway service. We'll create a REST API.
 
 <img src="images/rest-api-create-resource.png" alt="ec2 connect" width="1000"/>
 
-4. On the next page, set up HTTP Proxy, using the address for earlier as the endpoint, "http://<your-client-public-dns>:8082/{proxy}":
+4. On the next page, set up HTTP Proxy, using the address for earlier as the endpoint, "http://your-client-public-dns:8082/{proxy}":
 
 <img src="images/rest-api-create-method.png" alt="ec2 connect" width="1000"/>
 
@@ -325,7 +330,7 @@ Navigate to the AWS API Gateway service. We'll create a REST API.
 
 6. Now the API needs to be deployed. From the 'Actions' menu, select 'Deploy API'. Choose 'New stage' and give the stage a name, then click on 'Deploy':
 
-<img src="images/rest-api-test-method.png" alt="ec2 connect" width="500"/>
+<img src="images/rest-api-deploy.png" alt="ec2 connect" width="500"/>
 
 This completes the process and an invoke URL is generated that can then be used for POST requests.
 
