@@ -286,7 +286,7 @@ To start the REST API, navigate to the `confluent-7.2.0/bin` folder and run the 
 ./kafka-rest-start /home/ec2-user/confluent-7.2.0/etc/kafka-rest/kafka-rest.properties
 ```
 
-We can test if the API can receive requests by opening a web browser and going to "http://ec2-3-85-231-64.compute-1.amazonaws.com:8082/topics". The response should be displayed in the browser window and look something like:
+We can test if the API can receive requests by opening a web browser and going to "http://<your-client-public-dns>:8082/topics". The response should be displayed in the browser window and look something like:
 
 ```bash
 ["data.pin","data.user","__amazon_msk_canary","data.geo"]
