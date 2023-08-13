@@ -133,10 +133,10 @@ We also need to create an IAM role for the client machine.
             "Effect": "Allow",
             "Action": "kafka-cluster:*",
             "Resource": [
-                "arn:aws:kafka:*:778885355873:transactional-id/*/*/*",
-                "arn:aws:kafka:*:778885355873:group/*/*/*",
-                "arn:aws:kafka:*:778885355873:topic/*/*/*",
-                "arn:aws:kafka:*:778885355873:cluster/*/*"
+                "arn:aws:kafka:*:<AWS-UUID>:transactional-id/*/*/*",
+                "arn:aws:kafka:*:<AWS-UUID>:group/*/*/*",
+                "arn:aws:kafka:*:<AWS-UUID>:topic/*/*/*",
+                "arn:aws:kafka:*:<AWS-UUID>:cluster/*/*"
             ]
         },
         {
@@ -144,9 +144,9 @@ We also need to create an IAM role for the client machine.
             "Effect": "Allow",
             "Action": "kafka:*",
             "Resource": [
-                "arn:aws:kafka:*:778885355873:cluster/*/*",
-                "arn:aws:kafka:*:778885355873:configuration/*/*",
-                "arn:aws:kafka:*:778885355873:vpc-connection/*/*/*"
+                "arn:aws:kafka:*:<AWS-UUID>:cluster/*/*",
+                "arn:aws:kafka:*:<AWS-UUID>:configuration/*/*",
+                "arn:aws:kafka:*:<AWS-UUID>:vpc-connection/*/*/*"
             ]
         }
     ]
@@ -338,3 +338,159 @@ This completes the process and an invoke URL is generated that can then be used 
 
 Running the script [user_posting_emulation_to_API](user_posting_emulation_to_API.py) will emulate a stream of messages and post those messages to the cluster via the API gateway and the Kafka REST proxy.
 
+In order to access the messages in each topic in the cluster, I have used Kafka Connect, using AWS MSK Connect, to connect the cluster to an AWS S3 bucket into which we can deposit messages.
+
+### Connecting the Apache cluster to AWS S3 bucket
+
+To start with, create an S3 bucket that will connect to the cluster.
+
+1. From the AWS S3 dashboard, select 'Create bucket'
+2. Give the bucket a descriptive name (must be unique) and make sure the bucket is in the same AWS region as the rest of our resources. Keep other settings as default.
+
+Next, create an IAM role for the MSK connector using the following policy. **Again, this policy may not be restrictive enough for production purposes. I am using this for development only.**:
+
+```bash
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "kafka-cluster:DescribeCluster",
+                "kafka-cluster:Connect"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<BUCKET-NAME>",
+                "arn:aws:s3:::<BUCKET-NAME>/*",
+                "arn:aws:kafka:<REGION>:<AWS-UUID>:cluster/<CLUSTER-NAME>/<CLUSTER-UUID>"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:ReadData",
+                "kafka-cluster:DescribeTopic"
+            ],
+            "Resource": "arn:aws:kafka:<REGION>:<AWS-UUID>:topic/<CLUSTER-NAME>/<CLUSTER-UUID>/*"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:DescribeTopic",
+                "kafka-cluster:WriteData"
+            ],
+            "Resource": "arn:aws:kafka:<REGION>:<AWS-UUID>:topic/<CLUSTER-NAME>/<CLUSTER-UUID>/*"
+        },
+        {
+            "Sid": "VisualEditor3",
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:CreateTopic",
+                "kafka-cluster:ReadData",
+                "kafka-cluster:DescribeTopic",
+                "kafka-cluster:WriteData"
+            ],
+            "Resource": "arn:aws:kafka:<REGION>:<AWS-UUID>:topic/<CLUSTER-NAME>/<CLUSTER-UUID>/__amazon_msk_connect_*"
+        },
+        {
+            "Sid": "VisualEditor4",
+            "Effect": "Allow",
+            "Action": [
+                "kafka-cluster:AlterGroup",
+                "kafka-cluster:DescribeGroup"
+            ],
+            "Resource": [
+                "arn:aws:kafka:<REGION>:<AWS-UUID>:group/<CLUSTER-NAME>/<CLUSTER-UUID>/__amazon_msk_connect_*",
+                "arn:aws:kafka:<REGION>:<AWS-UUID>:group/<CLUSTER-NAME>/<CLUSTER-UUID>/connect-*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor5",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListStorageLensConfigurations",
+                "s3:ListAccessPointsForObjectLambda",
+                "s3:GetAccessPoint",
+                "s3:PutAccountPublicAccessBlock",
+                "s3:GetAccountPublicAccessBlock",
+                "s3:ListAllMyBuckets",
+                "s3:ListAccessPoints",
+                "s3:PutAccessPointPublicAccessBlock",
+                "s3:ListJobs",
+                "s3:PutStorageLensConfiguration",
+                "s3:ListMultiRegionAccessPoints",
+                "s3:CreateJob"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+The role should have the following trust relationship:
+
+```bash
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "kafkaconnect.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+```
+
+The next step is to create a VPC endpoint to S3. From the VPC dashboard in AWS, select 'Endpoints' from the left-hand menu then click on 'Create endpoint'. Give the endpoint a descriptive name, then select 'AWS services'. Search for 'S3' in the 'Services' search field, then select:
+
+<img src="images/vpc-endpoint.png" alt="vpc-endpoint-creation" width="1000">
+
+Choose the default VPC for the region, click the check box next to the default route tables, then click on 'Create endpoint'.
+
+We're now ready to create the connector. The first step is to create a new plugin for the connector.
+
+1. To create the plugin, a .zip file with the plugin files is required. For the Kafka S3 Sink Connector, this can be downloaded from "https://www.confluent.io/hub/confluentinc/kafka-connect-s3". Once downloaded, it should be uploaded to the S3 bucket, either via the console or via a web browser.
+2. In the AWS MSK dashboard, select 'Custom plugins' from the left-hand menu, then click on 'Create custom plugin'.
+3. In the next window, navigate to the S3 bucket where the .zip is stored, and select the .zip file:
+
+<img src="images/custom-plugin.png" alt="custom-plugin-creation" width="500">
+
+4. Click on 'Create custom plugin'. The process will take a few minutes.
+
+Now, it's possible to create the connector. Navigate to 'Connectors' in the left-hand menu of the MSK dashboard.
+
+1. Click on 'Create connector'.
+2. Select 'Use existing plugin' and select the plugin just created. Click 'Next'.
+3. Give the connector a name, make sure 'MSK cluster' is highlighted, then select the cluster created earlier.
+4. Use the following settings for the configuration:
+
+```bash
+connector.class=io.confluent.connect.s3.S3SinkConnector
+# same region as our bucket and cluster
+s3.region=<REGION>
+flush.size=1
+schema.compatibility=NONE
+tasks.max=3
+# this depends on names given to topics
+topics.regex=<TOPIC-NAME>.*
+format.class=io.confluent.connect.s3.format.json.JsonFormat
+partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
+value.converter.schemas.enable=false
+value.converter=org.apache.kafka.connect.json.JsonConverter
+storage.class=io.confluent.connect.s3.storage.S3Storage
+key.converter=org.apache.kafka.connect.storage.StringConverter
+s3.bucket.name=<BUCKET_NAME>
+```
+
+5. Choose defaults for remaining settings until 'Access Permissions', where the IAM role created for the connector should be selected.
+6. Click 'Next', then 'Next' again. Select a location for log delivery. I selected to have logs delivered to the S3 bucket.
+7. Click 'Next' and then 'Create connector'.
+
+Once the connector creation process is complete, you should be able to see any messages sent to the cluster in the S3 bucket, inside a folder named 'Topics'.
