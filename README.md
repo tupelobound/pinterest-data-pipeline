@@ -236,7 +236,59 @@ It is now possible to create topics on the Kafka cluster using the client machin
 
 For this project, I created three topics. One each for the `pinterest_data`, `geolocation_data`, and `user_data` outlined above.
 
+### Delivering messages to the Kafka cluster
 
+Now that our cluster is up and running, and the client is configured to access the cluster and create topics, it's possible to use the client to create producers for streaming messages to the cluster, and consumers for accessing those messages.
 
+However, for this project I used the Confluent package to set up a REST API on the client that listens for requests and interacts with the Kafka cluster accordingly.
 
+To do this, first download the Confluent package to the client from the client's command line:
+
+```bash
+# download package
+sudo wget https://packages.confluent.io/archive/7.2/confluent-7.2.0.tar.gz
+# unpack .tar
+tar -xvzf confluent-7.2.0.tar.gz 
+```
+
+Next, modify the kafka-rest.properties file:
+
+```bash
+# navigate to the correct directory
+cd cd confluent-7.2.0/etc/kafka-rest/
+nano nano kafka-rest.properties
+```
+
+Change the `bootstrap.servers` and the `zookeeper.connect` variables to those found in the MSK cluster information. Add the following lines to allow authentication:
+
+```bash
+# Sets up TLS for encryption and SASL for authN.
+client.security.protocol = SASL_SSL
+
+# Identifies the SASL mechanism to use.
+client.sasl.mechanism = AWS_MSK_IAM
+
+# Binds SASL client implementation.
+client.sasl.jaas.config = software.amazon.msk.auth.iam.IAMLoginModule required awsRoleArn="Your Access Role";
+
+# Encapsulates constructing a SigV4 signature based on extracted credentials.
+# The SASL client bound by "sasl.jaas.config" invokes this class.
+client.sasl.client.callback.handler.class = software.amazon.msk.auth.iam.IAMClientCallbackHandler
+```
+
+The inbound rules for the client security group also need to be modified to allow incoming HTTP requests on port 8082. On the AWS 'Security groups' page, choose the security group attached to the client, and add the following inbound rule:
+
+<img src="images/client-http-inbound-rules.png" alt="ec2 connect" width="1000"/>
+
+To start the REST API, navigate to the `confluent-7.2.0/bin` folder and run the following command:
+
+```bash
+./kafka-rest-start /home/ec2-user/confluent-7.2.0/etc/kafka-rest/kafka-rest.properties
+```
+
+We can test if the API can receive requests by opening a web browser and going to "http://ec2-3-85-231-64.compute-1.amazonaws.com:8082/topics". The response should be displayed in the browser window and look something like:
+
+```bash
+["data.pin","data.user","__amazon_msk_canary","data.geo"]
+```
 
