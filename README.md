@@ -505,7 +505,7 @@ s3.bucket.name=<BUCKET_NAME>
 
 Once the connector creation process is complete, you should be able to see any messages sent to the cluster in the S3 bucket, inside a folder named 'Topics'.
 
-### Batch processing data using Apache Spark on Databricks
+## Batch processing data using Apache Spark on Databricks
 
 In order to batch process the data on Databricks, it's necessary to mount the S3 bucket on Databricks. The file [mount_s3_and_get_data.ipynb](mount_s3_and_get_data.ipynb) is a notebook that was run on the Databricks platform. The steps carried out in the notebook are:
 
@@ -518,7 +518,7 @@ In order to batch process the data on Databricks, it's necessary to mount the S3
 7. Read the .json message files into three Spark dataframes, one each for each of the topics
 8. Unmount the S3 bucket
 
-## Clean data using Apache Spark on Databricks
+### Clean data using Apache Spark on Databricks
 
 The file [clean_batch_data.ipynb](clean_batch_data.ipynb) contains the code for performing the necessary cleaning of the dataframes created using the steps above. On Databricks, this code is hosted in a single notebook, and the cleaning steps occur between steps 7. and 8. above.
 
