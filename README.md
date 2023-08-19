@@ -522,4 +522,6 @@ In order to batch process the data on Databricks, it's necessary to mount the S3
 
 The file [clean_batch_data.ipynb](clean_batch_data.ipynb) contains the code for performing the necessary cleaning of the dataframes created using the steps above. On Databricks, this code is hosted in a single notebook, and the cleaning steps occur between steps 7. and 8. above.
 
+### Querying the data using Apache Spark on Databricks
+
 
