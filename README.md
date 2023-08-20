@@ -10,6 +10,17 @@ This project is a work in progress.
 - [Tools used](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#tools-used)
 - [Building the pipeline](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#building-the-pipeline)
     - [Create an Apache cluster using AWS MSK](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-an-apache-cluster-using-aws-msk)
+    - [Create a client machine for the cluster](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-a-client-machine-for-the-cluster)
+    - [Enable client machine to connect to the cluster](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#enable-client-machine-to-connect-to-the-cluster)
+    - [Install Kafka on the client machine](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#install-kafka-on-the-client-machine)
+    - [Create topics on the Kafka cluster](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-topics-on-the-kafka-cluster)
+    - [Delivering messages to the Kafka cluster](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#delivering-messages-to-the-kafka-cluster)
+    - [AWS API Gateway](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#aws-api-gateway)
+    - [Sending messages to the cluster using the API gateway](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#sending-messages-to-the-cluster-using-the-api-gateway)
+    - [Connecting the Apache cluster to AWS S3 bucket](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#connecting-the-apache-cluster-to-aws-s3-bucket)
+- [Batch processing data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#batch-processing-data-using-apache-spark-on-databricks)
+    - [Clean data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#clean-data-using-apache-spark-on-databricks)
+    - [Querying the data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#querying-the-data-using-apache-spark-on-databricks)
 
 ## Project Brief
 
