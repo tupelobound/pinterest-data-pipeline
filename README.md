@@ -84,6 +84,8 @@ user_data:
 
 - [Databricks](https://docs.databricks.com/en/index.html)
 
+- [Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html)
+
 ## Building the pipeline
 
 ### Create an Apache cluster using AWS MSK
@@ -546,4 +548,6 @@ The file [clean_batch_data.ipynb](clean_batch_data.ipynb) contains the code for 
 
 The file [query_batch_data.ipynb](query_batch_data.ipynb) contains the code for querying the dataframes and returning specific insights about the data. On Databricks, this code was run after the cleaning steps above.
 
+### Orchestrating automated workflow of notebook on Databricks
 
+MWAA was used to automate the process of running the batch processing on Databricks. The file [1215be80977f_dag.py](1215be80977f_dag.py) is the Python code for a directed acyclic graph (DAG) that orchestrates the running of the batch processing notebook described above. The file was uploaded to the MWAA environment, where Airflow is utilised to connect to and run the Databricks notebook at scheduled intervals, in this case `@daily`.
