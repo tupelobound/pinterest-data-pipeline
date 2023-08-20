@@ -21,6 +21,7 @@ This project is a work in progress.
 - [Batch processing data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#batch-processing-data-using-apache-spark-on-databricks)
     - [Clean data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#clean-data-using-apache-spark-on-databricks)
     - [Querying the data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#querying-the-data-using-apache-spark-on-databricks)
+    - [Orchestrating automated workflow of notebook on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#orchestrating-automated-workflow-of-notebook-on-databricks)
 
 ## Project Brief
 
