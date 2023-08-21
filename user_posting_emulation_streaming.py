@@ -72,6 +72,7 @@ def post_record_to_stream(invoke_url: str, stream: str, record_dict: dict):
     headers = {'Content-Type': 'application/json'}
     # make request to API
     response = requests.request("PUT", invoke_url, headers=headers, data=payload)
+    print(payload)
     print(response.status_code)
     
 
