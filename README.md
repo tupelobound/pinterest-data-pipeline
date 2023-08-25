@@ -21,6 +21,7 @@
     - [Clean data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#clean-data-using-apache-spark-on-databricks)
     - [Querying the data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#querying-the-data-using-apache-spark-on-databricks)
     - [Orchestrating automated workflow of notebook on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#orchestrating-automated-workflow-of-notebook-on-databricks)
+    - [Streaming data to Kinesis]()
 
 ## Project Brief
 
@@ -90,7 +91,7 @@ user_data:
 - [Databricks](https://docs.databricks.com/en/index.html) - This project uses the Databricks platform to perform Spark processing of batch and streaming data. From the documentation:
 >Databricks is a unified, open analytics platform for building, deploying, sharing, and maintaining enterprise-grade data, analytics, and AI solutions at scale. The Databricks Lakehouse Platform integrates with cloud storage and security in your cloud account, and manages and deploys cloud infrastructure on your behalf.
 
-- [Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html) - Apache Airflow enables users to use Python to build scheduling workflows for batch-oriented processes. From AWS docs:
+- [Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html) - Apache Airflow enables users to use Python to build scheduling workflows for batch-oriented processes. This project uses MWAA to orchestrate batch processing on the Databricks platform. From AWS docs:
 >With Amazon MWAA, you can use Apache Airflow and Python to create workflows without having to manage the underlying infrastructure for scalability, availability, and security.
 
 - [AWS Kinesis](https://aws.amazon.com/kinesis/) - AWS Kinesis is a managed service for processing and analysing streaming data. In this project I've used Kinesis Data Streams to collect and store data temporarily before using Spark on Databricks to read and process the stream.
@@ -106,12 +107,12 @@ user_data:
 The first stop in the pipeline for our data will be an Apache Kafka cluster in the AWS cloud ecosystem, using [Amazon Managed Streaming for Apache Kafka (MSK)](https://aws.amazon.com/msk/). The documentation includes a good guide for [getting started](https://docs.aws.amazon.com/msk/latest/developerguide/getting-started.html) and I will outline the steps taken to get a cluster up and running here.
 
 1. Firstly, log into the AWS console and navigate to MSK via the 'Services' menu.
-2. From the MSK menu, you can click on 'Create cluster' to start the process.
-3. Here, you can choose from 'quick' or 'custom' create options and can name your cluster:
+2. From the MSK menu, click on 'Create cluster' to start the process.
+3. Here, choose from 'quick' or 'custom' create options and name the cluster:
 
 <img src="images/apache-msk-1.png" alt="create Apache cluster" width="500"/>
 
-4. Scroll down and choose 'Provisioned' and specify the Kafka version and broker type. The type you choose will depend on requirements and cost considerations.
+4. Scroll down and choose 'Provisioned' and specify the Kafka version and broker type. The type chosen will depend on requirements and cost considerations.
 
 <img src="images/apache-msk-2.png" alt="kafka provisioned and broker type" width="500"/>
 
@@ -119,13 +120,13 @@ The first stop in the pipeline for our data will be an Apache Kafka cluster in t
 
 ### Create a client machine for the cluster
 
-Once your cluster is up and running, you'll need a client to communicate with it. As we're working on AWS, let's launch an EC2 instance to act as our client.
+Once the cluster is up and running, a client is needed to communicate with it. In this project, an EC2 instance is used to act as the client.
 
 1. Navigate to the EC2 dashboard and click on 'Launch Instance':
 
 <img src="images/ec2-launch-instance.png" alt="launch ec2 instance" width="500"/>
 
-2. Give your instance a name, e.g. 'pinterest-kafka-client'.
+2. Give the instance a name, e.g. 'pinterest-kafka-client'.
 3. Keep the default Application and OS images, and instance type. Again, this choice may be determined by usage and cost considerations.
 
 <img src="images/ec2-OS-images.png" alt="ec2 OS image options" width="500"/>
@@ -207,7 +208,7 @@ We also need to create an IAM role for the client machine.
 
 ### Install Kafka on the client machine
 
-1. Once the new instance is in the running state, you can connect via SSH to interact with the instance via the command line. To do this, click on the instance ID to open the summary page, then click on 'Connect':
+1. Once the new instance is in the running state, connect via SSH to interact with the instance using the command line. To do this, click on the instance ID to open the summary page, then click on 'Connect':
 
 <img src="images/connect-to-ec2.png" alt="ec2 connect" width="500"/>
 
@@ -341,7 +342,7 @@ To start the REST API, navigate to the `confluent-7.2.0/bin` folder and run the 
 ./kafka-rest-start /home/ec2-user/confluent-7.2.0/etc/kafka-rest/kafka-rest.properties
 ```
 
-We can test if the API can receive requests by opening a web browser and going to "http://your-client-public-dns:8082/topics". The response should be displayed in the browser window and look something like:
+The API's ability to receive requests can be tested by opening a web browser and going to "http://your-client-public-dns:8082/topics". The response should be displayed in the browser window and look something like:
 
 ```bash
 ["data.pin","data.user","__amazon_msk_canary","data.geo"]
@@ -351,7 +352,7 @@ For this project, to more easily connect to the API programmatically using diffe
 
 ### AWS API Gateway
 
-Navigate to the AWS API Gateway service. We'll create a REST API.
+Navigate to the AWS API Gateway service. This project uses a REST API.
 
 1. Click on 'Build' in the REST API box:
 
@@ -383,14 +384,14 @@ This completes the process and an invoke URL is generated that can then be used 
 
 Running the script [user_posting_emulation_to_API](user_posting_emulation_to_API.py) will emulate a stream of messages and post those messages to the cluster via the API gateway and the Kafka REST proxy.
 
-In order to access the messages in each topic in the cluster, I have used Kafka Connect, using AWS MSK Connect, to connect the cluster to an AWS S3 bucket into which we can deposit messages.
+In order to access the messages in each topic in the cluster, I have used Kafka Connect, using AWS MSK Connect, to connect the cluster to an AWS S3 bucket into which messages can be deposited.
 
 ### Connecting the Apache cluster to AWS S3 bucket
 
 To start with, create an S3 bucket that will connect to the cluster.
 
 1. From the AWS S3 dashboard, select 'Create bucket'
-2. Give the bucket a descriptive name (must be unique) and make sure the bucket is in the same AWS region as the rest of our resources. Keep other settings as default.
+2. Give the bucket a descriptive name (must be unique) and make sure the bucket is in the same AWS region as the rest of the project resources. Keep other settings as default.
 
 Next, create an IAM role for the MSK connector using the following policy. **Again, this policy may not be restrictive enough for production purposes. I am using this for development only.**:
 
@@ -509,7 +510,7 @@ We're now ready to create the connector. The first step is to create a new plugi
 
 4. Click on 'Create custom plugin'. The process will take a few minutes.
 
-Now, it's possible to create the connector. Navigate to 'Connectors' in the left-hand menu of the MSK dashboard.
+Now create the connector. Navigate to 'Connectors' in the left-hand menu of the MSK dashboard.
 
 1. Click on 'Create connector'.
 2. Select 'Use existing plugin' and select the plugin just created. Click 'Next'.
@@ -542,7 +543,7 @@ Once the connector creation process is complete, you should be able to see any m
 
 ## Batch processing data using Apache Spark on Databricks
 
-In order to batch process the data on Databricks, it's necessary to mount the S3 bucket on Databricks. The file [mount_s3_and_get_data.ipynb](mount_s3_and_get_data.ipynb) is a notebook that was run on the Databricks platform. The steps carried out in the notebook are:
+In order to batch process the data on Databricks, it's necessary to mount the S3 bucket on the platform. The file [mount_s3_and_get_data.ipynb](mount_s3_and_get_data.ipynb) is a notebook that was run on the Databricks platform. The steps carried out in the notebook are:
 
 1. Import necessary libraries
 2. List tables in Databricks filestore in order to obtain AWS credentials file name
@@ -564,3 +565,6 @@ The file [query_batch_data.ipynb](query_batch_data.ipynb) contains the code for 
 ### Orchestrating automated workflow of notebook on Databricks
 
 MWAA was used to automate the process of running the batch processing on Databricks. The file [1215be80977f_dag.py](1215be80977f_dag.py) is the Python code for a directed acyclic graph (DAG) that orchestrates the running of the batch processing notebook described above. The file was uploaded to the MWAA environment, where Airflow is utilised to connect to and run the Databricks notebook at scheduled intervals, in this case `@daily`.
+
+## Streaming data to Kinesis
+
