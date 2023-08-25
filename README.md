@@ -8,6 +8,7 @@ This project is a work in progress.
 - [Project Dependencies](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#project-dependencies)
 - [The data](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#the-data)
 - [Tools used](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#tools-used)
+- [Architecture Overview](https://github.com/tupelobound/pinterest-data-pipeline#architecture-overview)
 - [Building the pipeline](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#building-the-pipeline)
     - [Create an Apache cluster using AWS MSK](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-an-apache-cluster-using-aws-msk)
     - [Create a client machine for the cluster](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-a-client-machine-for-the-cluster)
@@ -71,9 +72,10 @@ user_data:
 - [Apache Kafka](https://kafka.apache.org/) - Apache Kafka is an event streaming platform. From the Kafka [documentation](https://kafka.apache.org/documentation/):
 >Event streaming is the practice of capturing data in real-time from event sources like databases, sensors, mobile devices, cloud services, and software applications in the form of streams of events; storing these event streams durably for later retrieval; manipulating, processing, and reacting to the event streams in real-time as well as retrospectively; and routing the event streams to different destination technologies as needed. Event streaming thus ensures a continuous flow and interpretation of data so that the right information is at the right place, at the right time.
 
-- [AWS MSK](https://aws.amazon.com/msk/)
+- [AWS MSK](https://aws.amazon.com/msk/) - Amazon Managed Streaming for Apache Kafka (Amazon MSK) is a fully managed service that enables you to build and run applications that use Apache Kafka to process streaming data. More information can be found in the [developer guide](https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html).
 
-- [AWS MSK Connect](https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html)
+- [AWS MSK Connect](https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html) - MSK Connect is a feature of Amazon MSK that makes it easy for developers to stream data to and from their Apache Kafka clusters. From the developer guide:
+>With MSK Connect, you can deploy fully managed connectors built for Kafka Connect that move data into or pull data from popular data stores like Amazon S3... Use source connectors to import data from external systems into your topics. With sink connectors, you can export data from your topics to external systems.
 
 - [Kafka REST Proxy](https://docs.confluent.io/platform/current/kafka-rest/index.html)
 
@@ -86,6 +88,8 @@ user_data:
 - [Databricks](https://docs.databricks.com/en/index.html)
 
 - [Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html)
+
+- [AWS Kinesis](https://aws.amazon.com/kinesis/)
 
 ## Architecture Overview
 
