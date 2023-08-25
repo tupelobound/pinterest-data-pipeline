@@ -87,6 +87,10 @@ user_data:
 
 - [Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html)
 
+## Architecture Overview
+
+<img src="images/CloudPinterestPipeline.png" alt="pinterest data pipeline overview"/>
+
 ## Building the pipeline
 
 ### Create an Apache cluster using AWS MSK
