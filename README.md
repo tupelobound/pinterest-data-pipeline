@@ -21,7 +21,7 @@
     - [Clean data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#clean-data-using-apache-spark-on-databricks)
     - [Querying the data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#querying-the-data-using-apache-spark-on-databricks)
     - [Orchestrating automated workflow of notebook on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#orchestrating-automated-workflow-of-notebook-on-databricks)
-    - [Streaming data to Kinesis]()
+- [Processing streaming data](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#processing-streaming-data)
 
 ## Project Brief
 
@@ -566,5 +566,5 @@ The file [query_batch_data.ipynb](query_batch_data.ipynb) contains the code for 
 
 MWAA was used to automate the process of running the batch processing on Databricks. The file [1215be80977f_dag.py](1215be80977f_dag.py) is the Python code for a directed acyclic graph (DAG) that orchestrates the running of the batch processing notebook described above. The file was uploaded to the MWAA environment, where Airflow is utilised to connect to and run the Databricks notebook at scheduled intervals, in this case `@daily`.
 
-## Streaming data to Kinesis
+## Processing streaming data
 
