@@ -24,7 +24,8 @@
 - [Processing streaming data](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#processing-streaming-data)
     - [Create data streams on Kinesis](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-data-streams-on-kinesis)
     - [Create API proxy for uploading data to streams](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-api-proxy-for-uploading-data-to-streams)
-    - [Sending data to the Kinesis streams]()
+    - [Sending data to the Kinesis streams](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#sending-data-to-the-kinesis-streams)
+    - [Processing the streaming data in Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#processing-the-streaming-data-in-databricks)
 
 ## Project Brief
 
@@ -682,7 +683,24 @@ After creating the new resources and methods, the API must be redeployed.
 
 Running the script [user_posting_emulation_streaming.py](user_posting_emulation_streaming.py) starts an infinite loop that, like in the examples above, retrieves records from the RDS database and sends them via the new API to Kinesis.
 
-### 
+### Processing the streaming data in Databricks
+
+The Jupyter notebook [process_kinesis_streaming_data.ipynb](process_kinesis_streaming_data.ipynb) contains all the code necessary for retrieving the streams from Kinesis, transforming (cleaning) the data, and then loading the data into Delta tables on the Databricks cluster. The steps taken in the code are:
+
+1. Import necessary functions and types
+2. List tables in Databricks filestore in order to obtain AWS credentials file name
+3. Read the credentials .csv into a Spark dataframe
+4. Generate credential variables from Spark dataframe
+5. Define functions for:
+    - getting streams from Kinesis using spark.readStream - returns dataframe with stream info and data in binary format
+    - deserialising the stream data - converts the binary data format to a dataframe using schema defined above
+    - writing streaming data to Delta tables using Spark writeStream function
+6. Define schema for deserialised data
+7. Invoke get_stream function for all three streams
+8. Invoke deserialise_stream function for all three streams
+9. Clean all three streams
+10. Display the streams
+11. Write the streams to Delta tables
 
 
 
