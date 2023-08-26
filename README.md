@@ -23,7 +23,7 @@
     - [Orchestrating automated workflow of notebook on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#orchestrating-automated-workflow-of-notebook-on-databricks)
 - [Processing streaming data](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#processing-streaming-data)
     - [Create data streams on Kinesis](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-data-streams-on-kinesis)
-    - [Create API proxy for uploading data to streams]()
+    - [Create API proxy for uploading data to streams](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-api-proxy-for-uploading-data-to-streams)
 
 ## Project Brief
 
@@ -615,6 +615,15 @@ Use the following code in the template:
 }`
 
 <img src="images/delete-method-settings-2.png" alt="delete method settings 2" width="1000">
+
+For the other methods, the same settings were used except for:
+
+- GET
+    - 'Action': '**DescribeStream**'
+    - 'Mapping Template': 
+        `{
+            "StreamName": "$input.params('stream-name')"
+        }`
 
 
 
