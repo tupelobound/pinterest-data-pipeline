@@ -610,9 +610,11 @@ Under 'Mapping Templates', add new mapping template:
 
 Use the following code in the template:
 
-`{
+```bash
+{
     "StreamName": "$input.params('stream-name')"
-}`
+}
+```
 
 <img src="images/delete-method-settings-2.png" alt="delete method settings 2" width="1000">
 
@@ -620,10 +622,58 @@ For the other methods, the same settings were used except for:
 
 - GET
     - 'Action': '**DescribeStream**'
-    - 'Mapping Template': 
-        `{
-            "StreamName": "$input.params('stream-name')"
-        }`
+    - 'Mapping Template':
+
+```bash
+{
+    "StreamName": "$input.params('stream-name')"
+}
+```
+
+- POST
+    - 'Action': '**CreateStream**'
+    - 'Mapping Template':
+
+```bash
+{
+    "ShardCount": #if($input.path('$.ShardCount') == '') 5 #else $input.path('$.ShardCount') #end,
+    "StreamName": "$input.params('stream-name')"
+}
+```
+
+/record
+
+- PUT
+    - 'Action': '**PutRecord**'
+    - 'Mapping Template':
+
+```bash
+{
+    "StreamName": "$input.params('stream-name')",
+    "Data": "$util.base64Encode($input.json('$.Data'))",
+    "PartitionKey": "$input.path('$.PartitionKey')"
+}
+```
+
+/records
+
+- PUT
+    - 'Action': '**PutRecords**'
+    - 'Mapping Template':
+
+```bash
+{
+    "StreamName": "$input.params('stream-name')",
+    "Records": [
+       #foreach($elem in $input.path('$.records'))
+          {
+            "Data": "$util.base64Encode($elem.data)",
+            "PartitionKey": "$elem.partition-key"
+          }#if($foreach.hasNext),#end
+        #end
+    ]
+}
+```
 
 
 
