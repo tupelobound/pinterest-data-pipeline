@@ -24,6 +24,7 @@
 - [Processing streaming data](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#processing-streaming-data)
     - [Create data streams on Kinesis](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-data-streams-on-kinesis)
     - [Create API proxy for uploading data to streams](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-api-proxy-for-uploading-data-to-streams)
+    - [Sending data to the Kinesis streams]()
 
 ## Project Brief
 
@@ -675,7 +676,13 @@ For the other methods, the same settings were used except for:
 }
 ```
 
+After creating the new resources and methods, the API must be redeployed.
 
+### Sending data to the Kinesis streams
+
+Running the script [user_posting_emulation_streaming.py](user_posting_emulation_streaming.py) starts an infinite loop that, like in the examples above, retrieves records from the RDS database and sends them via the new API to Kinesis.
+
+### 
 
 
 
