@@ -26,6 +26,7 @@
     - [Create API proxy for uploading data to streams](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-api-proxy-for-uploading-data-to-streams)
     - [Sending data to the Kinesis streams](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#sending-data-to-the-kinesis-streams)
     - [Processing the streaming data in Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#processing-the-streaming-data-in-databricks)
+- [Next steps](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#next-steps)
 
 ## Project Brief
 
@@ -40,6 +41,11 @@ In order to run this project, the following modules need to be installed:
 - `python-dotenv`
 - `sqlalchemy`
 - `requests`
+
+If you are using Anaconda and virtual environments (recommended), the Conda environment can be cloned by running the following
+command, ensuring that env.yml is present in the project:
+
+`conda create env -f env.yml -n $ENVIRONMENT_NAME`
 
 ## The data
 
@@ -701,6 +707,10 @@ The Jupyter notebook [process_kinesis_streaming_data.ipynb](process_kinesis_stre
 9. Clean all three streams
 10. Display the streams
 11. Write the streams to Delta tables
+
+## Next steps
+
+To take this project further, I think it would be a good idea to further query the streaming data and visualise the data using a tool such as Tableau or Power BI. To further 'production-ise' the code, I'd need to tighten up the IAM policies described above.
 
 
 
