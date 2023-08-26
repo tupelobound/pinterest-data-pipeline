@@ -22,6 +22,8 @@
     - [Querying the data using Apache Spark on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#querying-the-data-using-apache-spark-on-databricks)
     - [Orchestrating automated workflow of notebook on Databricks](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#orchestrating-automated-workflow-of-notebook-on-databricks)
 - [Processing streaming data](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#processing-streaming-data)
+    - [Create data streams on Kinesis](https://github.com/tupelobound/pinterest-data-pipeline/tree/main#create-data-streams-on-kinesis)
+    - [Create API proxy for uploading data to streams]()
 
 ## Project Brief
 
@@ -575,4 +577,44 @@ The first step in processing streaming data was to create three streams on AWS K
 1. From the Kinesis dashboard, select 'Create data stream'.
 
 <img src="images/kinesis-dashboard.png" alt="kinesis dashboard screenshot" width="500">
+
+2. Give the stream a name, and select 'Provisioned' capacity mode.
+
+<img src="images/create-stream.png" alt="create stream screenshot" width="500">
+
+3. Click on 'Create data stream' to complete the process.
+
+### Create API proxy for uploading data to streams
+
+It's possible to interact with the Kinesis streams using HTTP requests. In order to do this with the streams just added to Kinesis, I created new API resources on AWS API Gateway.
+
+The settings used for the DELETE method were:
+
+ - 'Integration Type': 'AWS Service'
+ - 'AWS Region': 'us-east-1'
+ - 'AWS Service': 'Kinesis'
+ - 'HTTP method': 'POST'
+ - 'Action': '**DeleteStream**'
+ - 'Execution role': 'arn of IAM role created'
+
+<img src="images/delete-method-settings-1.png" alt="delete method settings 1" width="1000">
+
+In 'Integration Request' under 'HTTP Headers', add a new header:
+
+- 'Name': 'Content-Type'
+- 'Mapped from': 'application/x-amz-json-1.1'
+
+Under 'Mapping Templates', add new mapping template:
+
+- 'Content Type': 'application/json'
+
+Use the following code in the template:
+
+`{
+    "StreamName": "$input.params('stream-name')"
+}`
+
+
+
+
 
