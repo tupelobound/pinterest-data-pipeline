@@ -568,3 +568,11 @@ MWAA was used to automate the process of running the batch processing on Databri
 
 ## Processing streaming data
 
+### Create data streams on Kinesis
+
+The first step in processing streaming data was to create three streams on AWS Kinesis, one for each of the data sources.
+
+1. From the Kinesis dashboard, select 'Create data stream'.
+
+<img src="images/kinesis-dashboard.png" alt="kinesis dashboard screenshot" width="500">
+
