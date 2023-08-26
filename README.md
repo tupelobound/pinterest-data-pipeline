@@ -597,7 +597,7 @@ The settings used for the DELETE method were:
  - 'Action': '**DeleteStream**'
  - 'Execution role': 'arn of IAM role created'
 
-<img src="images/delete-method-settings-1.png" alt="delete method settings 1" width="500">
+<img src="images/delete-method-settings-1.png" alt="delete method settings 1" width="600">
 
 In 'Integration Request' under 'HTTP Headers', add a new header:
 
@@ -614,7 +614,7 @@ Use the following code in the template:
     "StreamName": "$input.params('stream-name')"
 }`
 
-<img src="images/delete-method-settings-2.png" alt="delete method settings 2" width="500">
+<img src="images/delete-method-settings-2.png" alt="delete method settings 2" width="1000">
 
 
 
