@@ -1,4 +1,7 @@
+import datetime
+import json
 import os
+import requests
 import sqlalchemy
 
 from dotenv import load_dotenv
@@ -41,3 +44,35 @@ def get_record_from_table(table: str, connection, row_number: int):
     for row in selected_row:
         result = dict(row._mapping)
     return result
+
+
+def post_record_to_API(*args):
+    '''Creates payload of correct format for posting to Kinesis stream, and uses
+    requests library to send payload to invoke_url via PUT request
+    '''
+    # iterate over record dictionary and check if any values are of type datetime
+    for key, value in args[2].items():
+        # if so, convert to string
+        if type(value) == datetime.datetime:
+            args[2][key] = value.strftime("%Y-%m-%d %H:%M:%S")
+    # create payload from dictionary in format that can be uploaded to stream
+    if len(args) == 4:
+        payload = json.dumps({
+            "StreamName": args[3],
+            "Data": args[2],
+            "PartitionKey": args[3][23:]    
+        })
+    elif len(args) == 3:
+        payload = json.dumps({
+            "records": [
+                {
+                    "value": args[2]
+                }
+            ]     
+        })
+    # create header string for PUT request
+    headers = {'Content-Type': 'application/json'}
+    # make request to API
+    response = requests.request(args[0], args[1], headers=headers, data=payload)
+    print(payload)
+    print(response.status_code)
