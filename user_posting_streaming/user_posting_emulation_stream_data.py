@@ -78,7 +78,8 @@ def post_record_to_stream(invoke_url: str, stream: str, record_dict: dict):
 
 def run_infinite_post_data_loop():
     '''Iterates infinitely, establishing database connection and calling method
-    to obtain random records from three separate tables'''
+    to obtain random records from three separate tables
+    '''
     while True:
         # pause for a random length of time between 0 and 2 seconds
         sleep(random.randrange(0, 2))
