@@ -392,7 +392,7 @@ This completes the process and an invoke URL is generated that can then be used 
 
 ### Sending messages to the cluster using the API gateway
 
-Running the script [user_posting_emulation_to_API](user_posting_streaming/user_posting_emulation_batch_data.py) will emulate a stream of messages and post those messages to the cluster via the API gateway and the Kafka REST proxy.
+Running the script [user_posting_emulation_batch_data.py](user_posting_streaming/user_posting_emulation_batch_data.py) will emulate a stream of messages and post those messages to the cluster via the API gateway and the Kafka REST proxy.
 
 In order to access the messages in each topic in the cluster, I have used Kafka Connect, using AWS MSK Connect, to connect the cluster to an AWS S3 bucket into which messages can be deposited.
 
@@ -687,7 +687,7 @@ After creating the new resources and methods, the API must be redeployed.
 
 ### Sending data to the Kinesis streams
 
-Running the script [user_posting_emulation_streaming.py](user_posting_streaming/user_posting_emulation_stream_data.py) starts an infinite loop that, like in the examples above, retrieves records from the RDS database and sends them via the new API to Kinesis.
+Running the script [user_posting_emulation_stream_data.py](user_posting_streaming/user_posting_emulation_stream_data.py) starts an infinite loop that, like in the examples above, retrieves records from the RDS database and sends them via the new API to Kinesis.
 
 ### Processing the streaming data in Databricks
 
