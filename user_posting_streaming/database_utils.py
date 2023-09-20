@@ -48,7 +48,7 @@ def get_record_from_table(table: str, connection, row_number: int):
 
 def post_record_to_API(*args):
     '''Creates payload of correct format for posting to API, and uses
-    requests library to send payload to invoke_url via PUT request
+    requests library to send payload to invoke_url via PUT or POST request
     '''
     # iterate over record dictionary and check if any values are of type datetime
     for key, value in args[2].items():
