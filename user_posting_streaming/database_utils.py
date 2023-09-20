@@ -47,7 +47,7 @@ def get_record_from_table(table: str, connection, row_number: int):
 
 
 def post_record_to_API(*args):
-    '''Creates payload of correct format for posting to Kinesis stream, and uses
+    '''Creates payload of correct format for posting to API, and uses
     requests library to send payload to invoke_url via PUT request
     '''
     # iterate over record dictionary and check if any values are of type datetime
@@ -55,13 +55,15 @@ def post_record_to_API(*args):
         # if so, convert to string
         if type(value) == datetime.datetime:
             args[2][key] = value.strftime("%Y-%m-%d %H:%M:%S")
-    # create payload from dictionary in format that can be uploaded to stream
+    # create payload from dictionary in format that can be uploaded to API
+    # if there are 4 arguments, payload is going to Kinesis stream API
     if len(args) == 4:
         payload = json.dumps({
             "StreamName": args[3],
             "Data": args[2],
             "PartitionKey": args[3][23:]    
         })
+    # if there are 3 arguments, payload is going to Kafka batch API
     elif len(args) == 3:
         payload = json.dumps({
             "records": [
