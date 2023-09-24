@@ -106,8 +106,9 @@ def post_record_to_API(*args):
 
 
 def run_infinitely(func):
-    '''Iterates infinitely, establishing database connection and calling method
-    to obtain random records from three separate tables
+    '''
+    Decorator to run function infinitely at random intervals between 0 and 2
+    seconds
     '''
     def inner():
         while True:
