@@ -49,7 +49,7 @@ command, ensuring that env.yml is present in the project:
 
 ## The data
 
-In order to emulate the kind of data that Pinterest's engineers are likely to work with, this project contains a script, [user_posting_emulation_to_console.py](user_posting_streaming/user_posting_emulation_to_console.py) that when run from the terminal mimics the stream of random data points received by the Pinterest API when POST requests are made by users uploading data to Pinterest.
+In order to emulate the kind of data that Pinterest's engineers are likely to work with, this project contains a script, [user_posting_emulation_to_console.py](user_posting_scripts/user_posting_emulation_to_console.py) that when run from the terminal mimics the stream of random data points received by the Pinterest API when POST requests are made by users uploading data to Pinterest.
 
 Running the script instantiates a database connector class, which is used to connect to an AWS RDS database containing the following tables:
 
@@ -392,7 +392,7 @@ This completes the process and an invoke URL is generated that can then be used 
 
 ### Sending messages to the cluster using the API gateway
 
-Running the script [user_posting_emulation_batch_data.py](user_posting_streaming/user_posting_emulation_batch_data.py) will emulate a stream of messages and post those messages to the cluster via the API gateway and the Kafka REST proxy.
+Running the script [user_posting_emulation_batch_data.py](user_posting_scripts/user_posting_emulation_batch_data.py) will emulate a stream of messages and post those messages to the cluster via the API gateway and the Kafka REST proxy.
 
 In order to access the messages in each topic in the cluster, I have used Kafka Connect, using AWS MSK Connect, to connect the cluster to an AWS S3 bucket into which messages can be deposited.
 
@@ -687,7 +687,7 @@ After creating the new resources and methods, the API must be redeployed.
 
 ### Sending data to the Kinesis streams
 
-Running the script [user_posting_emulation_stream_data.py](user_posting_streaming/user_posting_emulation_stream_data.py) starts an infinite loop that, like in the examples above, retrieves records from the RDS database and sends them via the new API to Kinesis.
+Running the script [user_posting_emulation_stream_data.py](user_posting_scripts/user_posting_emulation_stream_data.py) starts an infinite loop that, like in the examples above, retrieves records from the RDS database and sends them via the new API to Kinesis.
 
 ### Processing the streaming data in Databricks
 
