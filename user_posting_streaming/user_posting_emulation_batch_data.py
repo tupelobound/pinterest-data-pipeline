@@ -1,38 +1,20 @@
-import random
-
 from database_utils import *
-from time import sleep
 
-# generate seed for reproducible 'random' results
-random.seed(100)
-
-# instantiate a new database connector object
 new_connector = AWSDBConnector()
 
-
+@run_infinitely
 def run_infinite_post_data_loop():
-    '''Iterates infinitely, establishing database connection and calling method
-    to obtain random records from three separate tables
-    '''
-    while True:
-        # pause for a random length of time between 0 and 2 seconds
-        sleep(random.randrange(0, 2))
-        # generate a random row number between 0 and 11000
-        random_row = random.randint(0, 11000)
-        # create database connection
-        engine = new_connector.create_db_connector()
-        with engine.connect() as connection:
-            # get row record for random row from three separate tables
-            pin_result = get_record_from_table("pinterest_data", connection, random_row)
-            geo_result = get_record_from_table("geolocation_data", connection, random_row)
-            user_result = get_record_from_table("user_data", connection, random_row)
-            # post result to Kafka cluster via API
-            post_record_to_API("POST", "https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.pin", pin_result)
-            post_record_to_API("POST", "https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.geo", geo_result)
-            post_record_to_API("POST", "https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.user", user_result)
+    new_connector.connect_and_get_records()
+    # post result to Kafka cluster via API
+    post_record_to_API("POST", "https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.pin", new_connector.pin_result)
+    post_record_to_API("POST", "https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.geo", new_connector.geo_result)
+    post_record_to_API("POST", "https://hltnel789h.execute-api.us-east-1.amazonaws.com/Production/topics/1215be80977f.user", new_connector.user_result)
 
 
 if __name__ == "__main__":
     print('Working')
     run_infinite_post_data_loop()
+    
+
+
     
