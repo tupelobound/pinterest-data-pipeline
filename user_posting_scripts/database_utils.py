@@ -68,40 +68,50 @@ class AWSDBConnector:
             self.user_result = self.get_record_from_table("user_data", connection, random_row)
 
 
-def post_record_to_API(*args):
+def post_record_to_API(method: str, invoke_url: str, record_dict: dict, *args):
     '''Creates payload of correct format for posting to API, and uses
     requests library to send payload to invoke_url via PUT or POST request
+
+    Parameters
+    ----------
+        method: str
+            Should be 'POST' when posting to Kafka cluster, 'PUT' when posting to Kinesis stream
+        invoke_url: str
+            Invoke URL of API
+        record_dict: dict
+            Row record obtained from database
+        *args:
+            Should be used when posting to Kinesis stream, should be stream name string
     '''
     # iterate over record dictionary and check if any values are of type datetime
-    for key, value in args[2].items():
+    for key, value in record_dict.items():
         # if so, convert to string
         if type(value) == datetime.datetime:
-            args[2][key] = value.strftime("%Y-%m-%d %H:%M:%S")
+            record_dict[key] = value.strftime("%Y-%m-%d %H:%M:%S")
     # create payload from dictionary in format that can be uploaded to API
-    # if there are 4 arguments, payload is going to Kinesis stream API
-    if len(args) == 4:
-        # create header string for request
+    # if optional argument is included, payload is going to Kinesis stream API
+    if len(args) == 1:
+        # create correct header string for request
         headers = {'Content-Type': 'application/json'}
+        # create correct format of payload
         payload = json.dumps({
-            "StreamName": args[3],
-            "Data": args[2],
-            "PartitionKey": args[3][23:]    
+            "StreamName": args[0],
+            "Data": record_dict,
+            "PartitionKey": args[0][23:]    
         })
-    # if there are 3 arguments, payload is going to Kafka batch API
-    elif len(args) == 3:
+    # if there are no optional arguments, payload is going to Kafka batch API
+    elif len(args) == 0:
         # create header string for POST request
         headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
         payload = json.dumps({
             "records": [
                 {
-                    "value": args[2]
+                    "value": record_dict
                 }
             ]     
         })
-    
     # make request to API
-    response = requests.request(args[0], args[1], headers=headers, data=payload)
-    print(payload)
+    response = requests.request(method, invoke_url, headers=headers, data=payload)
     print(response.status_code)
 
 
